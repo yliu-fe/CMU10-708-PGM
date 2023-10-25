@@ -7,7 +7,6 @@
 ## Course Info
 Website(2019 Spring): https://sailinglab.github.io/pgm-spring-2019/
 
-Homeworks: https://sailinglab.github.io/pgm-spring-2019/homework/
 
 ## Course Modules
 The origin schedule(English) is shown in: https://sailinglab.github.io/pgm-spring-2019/lectures/
@@ -51,3 +50,14 @@ The origin schedule(English) is shown in: https://sailinglab.github.io/pgm-sprin
 | 27  | 用于学习、推断和预测的可扩展算法与系统               |
 | 28  | 从工程角度看AI                                       |
 
+## Homeworks
+Homeworks: https://sailinglab.github.io/pgm-spring-2019/homework/
+
+- HW1: BN、MRF、Exact Inference、Parameter Learning
+- HW1_code: Junction Tree, Baum-Welch Algorithm
+- HW2: Sequence Model、Variational Inference 、Importance Sampling、MCMC
+- HW2_code: HMM
+- HW3: Variational Autoencoder, GAN
+- HW3_colab: Wake-sleep algorithm, VAE
+- HW4: Reinforcement Learning, Bayesian Nonparametrics
+- HW4_colab: RL as Probabilistic Inference
