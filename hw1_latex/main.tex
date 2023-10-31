@@ -1,0 +1,503 @@
+%!TeX program = xelatex
+%
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{parskip}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx,subcaption}
+\usepackage{algorithm}
+\usepackage[round]{natbib}
+\usepackage{tikz-cd}
+\usepackage{xeCJK}
+
+
+\usepackage[most]{tcolorbox}
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+\usepackage{xcolor} %hilight
+\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+%% ---------------------------------
+%\begin{solution}
+%\hilight{TODO}
+%\end{solution}
+%% ---------------------------------
+
+
+
+\usepackage{tikz}
+\newcommand*\circled[1]{
+\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=1pt] (char) {#1};}
+}
+            
+% xun
+\newcommand{\Gcal}{\mathcal{G}}
+\newcommand{\Ical}{\mathcal{I}}
+\newcommand{\Hcal}{\mathcal{H}}
+\newcommand{\Ucal}{\mathcal{U}}
+\newcommand{\Tcal}{\mathcal{T}}
+\newcommand{\Ncal}{\mathcal{N}}
+\newcommand{\Cbs}{\boldsymbol{C}}
+\newcommand{\Sbs}{\boldsymbol{S}}
+\newcommand{\Pa}{\text{Pa}}
+\newcommand{\De}{\text{De}}
+\newcommand{\Nd}{\text{Nd}}
+            
+
+\title{10-708 PGM (Spring 2019): Homework 1
+{\color{red} v1.1}
+}
+\author{
+\begin{tabular}{rl}
+Andrew ID: & [no ID] \\
+Name: & [个人作答，仅供参考] 
+\end{tabular}
+}
+\date{}
+
+
+\begin{document}
+
+\maketitle
+
+以下是我对这些题目的作答，仅供参考，如有错误疏漏，请批评指正。解答中所指“定理、定义x.x”均出自Koller \& Friedman(2009)教材。
+\section{Bayesian Networks [20 points] (Xun)}
+
+State True or False, and briefly justify your answer in a few sentences. You can cite theorems from \citet{koller2009probabilistic}. Throughout the section, $P$ is a distribution and $\Gcal$ is a BN structure.
+
+\textit{判断对错，并简要给出原因。可以引用Koller和Friedman（2009）教材中的定理。在这一大题中，$P$表示概率分布，$\Gcal$表示贝叶斯网络结构。}
+
+\begin{enumerate}
+
+	\item \textbf{[2 points]} If $ A \perp B \ | \ C $ and $ A \perp C \ | \ B $, then $ A \perp B $ and $ A \perp C $.
+	      (Suppose the joint distribution of $ A, B, C $ is positive.)
+
+	      \begin{solution}
+		      \textbf{错误。}\textit{反例：$B = C$（无论$A$是否独立于$B$或$C$）。}
+
+		      具体来说，从题目给出的两个条件独立出发，有：
+		      \begin{align*}
+			      P(A,B \mid C) & = P(A \mid C) P(B \mid C) \\
+			      P(A,C \mid B) & = P(A \mid B) P(C\mid B)
+		      \end{align*}
+		      而$A,B,C$的联合概率分布可以分别由$(A,C \mid B)$和$(A,B\mid C)$得出：
+		      \begin{align*}
+			      P(A,B,C)             & = P(A,B \mid C) P(C) = P(A,C \mid B) P(B) \\
+			      \text{(由条件独立性)}\quad & = P(A\mid C)P(B,C) = P(A\mid B) P(B,C)
+		      \end{align*}
+		      从而推得：
+		      \begin{align*}
+			      P(A\mid C)=P(A \mid B)
+		      \end{align*}
+		      如果$A \perp B$且$A \perp C$，确实能导致上式成立，因为此时上式直接等价于$P(A) =P(A)$。但这并不是唯一能使上式成立的情况：例如$B = C$，此时无论$A$是否独立于$B,C$，都能使上式成立。
+	      \end{solution}
+
+
+	      \begin{figure}[h]
+		      \centering
+		      \begin{tikzcd}
+			      A \arrow[r] & B \arrow[r] & C \\
+			      D \arrow[ur] \arrow[r] & E &
+		      \end{tikzcd}
+		      \caption{A Bayesian network.}
+		      \label{fig:y-bayesnet}
+	      \end{figure}
+
+
+	\item \textbf{[2 points]} In Figure~\ref{fig:y-bayesnet}, $ E \perp C \ | \ B $.
+
+	      \begin{solution}
+		      \textbf{正确。}$B$形成了对$E$和$C$的d-分离。
+
+		      条件概率形式的推导比较复杂，直接从d-separation的角度出发。$C$与$E$之间唯一的通路是：
+		      \begin{align*}
+			      E \leftarrow D \rightarrow B \rightarrow C
+		      \end{align*}
+		      只有这条通路完全被打通，$E$和$C$才相互（条件）\textbf{不}独立。而以$B$作为条件时，$D \rightarrow B \rightarrow C$的通路被阻断，此时根据d-separation原则（定理3.4的逆否命题），有$E \perp C \mid B$成立。
+	      \end{solution}
+
+	\item \textbf{[2 points]} In Figure~\ref{fig:y-bayesnet}, $ A \perp E \ | \ C $.
+
+	      \begin{solution}
+		      \textbf{错误。}在已知$C$的情况下，$A$与$E$间不存在d-分离。
+
+		      尽管$B$作为v-structure的顶点并不存在于条件集里，但$C$是$B$的子节点（相当于也知道$B$的部分信息），从而使$A \rightarrow B \leftarrow D$的路径开放。而由于并不控制$D$作为条件，$E \leftarrow D \rightarrow B$的路径也开放，因此从$A$到$E$的路径并未被阻断。因此，$A \not \perp E \mid C$。【\textbf{金标准，必然排除条件独立}】
+
+		      这一命题可以通过将因果图亲缘化、无向化来近似地判断，去掉$C$后，能够看到$A-D-E$这条无向边通路，并判断$A$与$E$并\textbf{不能保证条件独立}。参见附录中图\ref{fig:bayesnet-origin}开始的全过程。【\textbf{结果仅供参考，不能完全排除条件独立的可能性}】
+	      \end{solution}
+
+
+
+	      \begin{figure}[h]
+		      \centering
+		      \begin{tikzcd}
+			      P \text{ factorizes over } \Gcal
+			      \arrow[r, Rightarrow, "(1)"]
+			      & \Ical (\Gcal) \subseteq \Ical (P)
+			      \arrow[r, Rightarrow, "(2)"]
+			      & \Ical_\ell (\Gcal) \subseteq \Ical (P)
+			      \arrow[ll, Rightarrow, bend left=30, "(3)" above]
+		      \end{tikzcd}
+		      \caption{Some relations in Bayesian networks.}
+		      \label{fig:relations-bayesnet}
+	      \end{figure}
+
+
+
+	\item \textbf{[2 points]} In Figure~\ref{fig:relations-bayesnet}, relation (1) is true.
+	      \begin{solution}
+		      \textbf{正确。}参照定理3.1和3.2，命题"$P$ factorizes over(according to) $G$"是命题"$\Gcal$是 $P$的I-map"的充要条件；由定义3.3知，"$\Ical(\Gcal)$是 $\Ical(P)$的I-map"等价于$\Ical(\Gcal) \subseteq \Ical(P)$。
+
+		      顺便复习一下$\Ical$的定义，$\Ical(\Gcal)$是贝叶斯网络$\Gcal$中含有的所有条件独立关系的集合。类似的，$\Ical(P)$是概率分布$P$中条件独立关系的集合。而如果$\Ical(\Gcal) \subseteq \Ical(P)$，则称图$\Gcal$是概率分布$P$的I-map。而$\Ical_{\ell}(\Gcal)$则是贝叶斯网络$\Gcal$中的局部条件独立性假设的集合：
+		      \begin{align*}
+			      \Ical_{\ell}(\Gcal) := \{X_{i} \perp NonDecendants_{X_i} \mid Pa_{X_i} , \forall i\}
+		      \end{align*}
+
+	      \end{solution}
+
+	\item \textbf{[2 points]} In Figure~\ref{fig:relations-bayesnet}, relation (2) is true.
+	      \begin{solution}
+		      \textbf{正确。}$\Ical_{\ell}(\Gcal)$是$\Gcal$中的局部条件独立性，而贝叶斯网络中还可能存在其他条件独立性，即$\Ical_{\ell}(\Gcal)$是$\Ical(\Gcal)$的子集。由集合性质知该命题正确。
+
+		      “其他的条件独立性”例如：$A_3 \leftarrow A_2 \leftarrow A_1 \leftarrow P \rightarrow B_1 \rightarrow B_2 \rightarrow B_3$。在控制$A_1, P, B_1$中任意一点的条件下，$A_3, B_3$条件独立，而$A_1, P, B_1$都不是$A_3, B_3$的父节点。
+
+	      \end{solution}
+
+
+
+	\item \textbf{[2 points]} In Figure~\ref{fig:relations-bayesnet}, relation (3) is true.
+
+	      \begin{solution}
+		      \textbf{正确。}首先看$\Ical_{\ell}(\Gcal)$与$\Ical(\Gcal)$的关系，如果二者相等，则（3）必然成立。
+
+		      如果$\Ical_{\ell}(\Gcal)$是$\Ical(\Gcal)$的真子集，如何？按照定义3.2和3.3，$\Ical_{\ell}(\Gcal) \subseteq \Ical(P)$时$\Gcal$即为$P$的I-map，进而有（3）成立。
+	      \end{solution}
+
+	\item \textbf{[2 points]} If $ \Gcal $ is an I-map for $ P $, then $ P $ may have extra conditional independencies than $ \Gcal $.
+
+	      \begin{solution}
+		      \textbf{正确。}$\Gcal$是$P$的一个I-map的充要条件是：$\Ical(\Gcal) \subseteq \Ical(P)$，而等号并不总是成立，也就是$\Ical(P)$中含有$\Ical(\Gcal)$中不具有的某些条件独立性断言，这等价于题中命题。
+	      \end{solution}
+
+
+	\item \textbf{[2 points]} Two BN structures $ \Gcal_1 $ and $ \Gcal_2 $ are I-equivalent iff they have the same skeleton and the same set of v-structures.
+
+	      \begin{solution}
+		      \textbf{错误。}命题“$\Gcal_1$与$\Gcal_2$是I-等价的”的充要条件是“$\Gcal_1, \Gcal_2$具有相同的框架（定理3.8），与相同的无亲缘性集(the same set of immorality)”。所谓的"immorality"指的是对于v-structure $X \rightarrow Z \leftarrow Y$，亲代节点$X,Y$之间没有有向边连接。
+	      \end{solution}
+
+	\item \textbf{[2 points]} The minimal I-map of a distribution is the I-map with fewest edges.
+
+	      \begin{solution}
+		      \textbf{错误。}最小I-map指的是不能再删除任何的边，而不是边最少。参考Koller \& Friedman(2009)的图3.8(b)和3.8(c)，这两个贝叶斯网络都是同一个分布的最小I-map，但显然(c)图比(b)图多很多条边。
+	      \end{solution}
+
+	\item \textbf{[2 points]} The P-map of a distribution, if exists, is unique.
+
+	      \begin{solution}
+		      \textbf{错误。}对于同一个$P$来说，如果有P-map，也不见得唯一。$X \to Z \to Y$, $Y \to Z \to X$代表了完全相同的条件独立性，即$X \perp Y \mid Z$。对于这两张因果图完美对应的$P$来说，这两个因果图都是它的P-map，二者具有I-等价，但并不唯一。
+	      \end{solution}
+
+\end{enumerate}
+
+
+\newpage
+
+
+\section{Undirected Graphical Models [25 points] (Paul)}
+
+\subsection{Local, Pairwise and Global Markov Properties [18 points]}
+
+\begin{enumerate}
+	\item Prove the following properties:
+	      \begin{itemize}
+		      \item \textbf{[2 points]} If $A \perp {\color{red} (B,D) } \ | \ C$ then $A \perp B \ | \ C$.
+		      \item \textbf{[2 points]} If $A \perp {\color{red} (B,D) } \ | \ C$ then $A \perp B \ | \ {\color{red} (C,D) }$ and $A \perp D \ | \ {\color{red} (B,C) }$.
+		      \item \textbf{[2 points]} For strictly positive distributions, if $A \perp B \ | \ {\color{red} (C,D) }$ and $A \perp C \ | \ {\color{red} (B,D) }$ then $A \perp {\color{red} (B,C) } \ | \ D$.
+	      \end{itemize}
+	      \begin{solution}
+		      对上述三个性质的证明。
+
+		      \textbf{性质1：}
+
+		      \textbf{性质2：}
+
+		      \textbf{性质3：}
+	      \end{solution}
+	\item \textbf{[6 points]} Show that for any undirected graph $G$ and distribution $P$, if $P$ factorizes according to $G$, then $P$ will also satisfy the global Markov properties of $G$.
+	\item \textbf{[6 points]} Show that for any undirected graph $G$ and distribution $P$, if $P$ satisfies the local Markov property with respect to $G$, then $P$ will also satisfy the pairwise Markov property of $G$.
+\end{enumerate}
+
+
+
+\subsection{Gaussian Graphical Models [7 points]}
+
+Now we consider a specific instance of undirected graphical models. Let $X = \{ X_1, ..., X_d \}$ be a set of random variables and follow a joint Gaussian distribution $X \sim \mathcal{N}(\mu, \Lambda^{-1})$ where $\Lambda \in \mathbb{S}^{++}$ is the precision matrix. Let $X_j,X_k$ be two nodes in $X$, and $Z = \{X_i \ | \ i \notin \{j,k\}\}$ denote the remaining nodes. Show that $X_j \perp X_k \ | \ Z$ if and only if $\Lambda_{jk} = 0$.
+
+
+
+
+\newpage
+
+\section{Exact Inference [40 points] (Xun)}
+
+\subsection{Variable elimination on a grid [10 points]}
+
+Consider the following Markov network:
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzcd}
+		A \arrow[r, dash] & B \arrow[r, dash] & C \\
+		D \arrow[r, dash] \arrow[u, dash] & E \arrow[r, dash] \arrow[u, dash] & F \arrow[u, dash] \\
+		G \arrow[r, dash] \arrow[u, dash] & H \arrow[r, dash] \arrow[u, dash] & I \arrow[u, dash]
+	\end{tikzcd}
+\end{figure}
+
+
+We are going to see how \emph{tree-width}, a property of the graph, is related to the intrinsic complexity of variable elimination of a distribution.
+
+
+\begin{enumerate}
+
+	\item \textbf{[2 points]} Write down largest clique(s) for the elimination order $ E, D, H, F, B, A, G, I, C $.
+
+	      \begin{solution}
+		      The largest clique for order above is:
+	      \end{solution}
+
+
+	\item \textbf{[2 points]} Write down largest clique(s) for the elimination order $ A, G, I, C, D, H, F, B, E $.
+
+
+
+	\item \textbf{[2 points]} Which of the above ordering is preferable? Explain briefly.
+
+
+
+	\item \textbf{[4 points]} Using this intuition, give a reasonable $ (\ll n^2) $ upper bound on the tree-width of the $ n \times n $ grid.
+
+
+
+\end{enumerate}
+
+\subsection{Junction tree in action: part 1 [10 points]}
+
+
+
+Consider the following Bayesian network $ \Gcal $:
+\begin{figure}[h]
+	\centering
+	\begin{tikzcd}
+		A \arrow[r] \arrow[rd] & B \arrow[r] & C \arrow[d] \\
+		& E \arrow[r] &  D
+	\end{tikzcd}
+\end{figure}
+
+We are going to construct a junction tree $ \Tcal $ from $ \Gcal $.
+Please sketch the generated objects in each step.
+
+\begin{enumerate}
+	\item \textbf{[1 pts]} Moralize $ \Gcal $ to construct an undirected graph $ \Hcal $.
+
+
+
+	\item \textbf{[3 pts]} Triangulate $ \Hcal $ to construct a chordal graph $ \Hcal^* $.
+
+	      (Although there are many ways to triangulate a graph, for the ease of grading, please use the triangulation that corresponds to the elimination order $ A, B, C, D, E $.)
+
+
+	\item \textbf{[3 pts]} Construct a cluster graph $ \Ucal $ where each node is a maximal clique $ \Cbs_i $ from $ \Hcal^* $ and each edge is the sepset $ \Sbs_{i,j} = \Cbs_i \cap \Cbs_j $ between adjacent cliques $ \Cbs_i $ and $ \Cbs_j $.
+
+
+
+
+	\item \textbf{[3 pts]} Run maximum spanning tree algorithm on $ \Ucal $ to construct a junction tree $ \Tcal $.
+
+	      (The cluster graph is small enough to calculate maximum spanning tree in one's head.)
+
+
+\end{enumerate}
+
+
+
+\subsection{Junction tree in action: part 2 [20 points]}
+
+Continuing from part 1, now assume all variables are binary and the CPDs are parameterized as follows:
+\begin{table}[h]
+	\centering
+	\hspace{-2em}
+	\begin{subtable}[]{0.14\textwidth}
+		\begin{tabular}{@{}ccc@{}}
+			\toprule
+			$A$ & $P(A)$  \\ \midrule
+			0   & $ x_0 $ \\ \bottomrule
+		\end{tabular}
+	\end{subtable}
+	~
+	\begin{subtable}[]{0.2\textwidth}
+		\begin{tabular}{@{}ccc@{}}
+			\toprule
+			$A$ & $B$ & $P(B|A)$ \\ \midrule
+			0   & 0   & $ x_1 $  \\
+			1   & 0   & $ x_2 $  \\ \bottomrule
+		\end{tabular}
+	\end{subtable}
+	~
+	\begin{subtable}[]{0.2\textwidth}
+		\begin{tabular}{@{}ccc@{}}
+			\toprule
+			$A$ & $E$ & $P(E|A)$ \\ \midrule
+			0   & 0   & $ x_3 $  \\
+			1   & 0   & $ x_4 $  \\ \bottomrule
+		\end{tabular}
+	\end{subtable}
+	~
+	\begin{subtable}[]{0.2\textwidth}
+		\begin{tabular}{@{}ccc@{}}
+			\toprule
+			$B$ & $C$ & $P(C|B)$ \\ \midrule
+			0   & 0   & $ x_5 $  \\
+			1   & 0   & $ x_6 $  \\ \bottomrule
+		\end{tabular}
+	\end{subtable}
+	~
+	\begin{subtable}[]{0.2\textwidth}
+		\begin{tabular}{@{}cccc@{}}
+			\toprule
+			$C$ & $E$ & $ D $ & $P(D|C, E)$ \\ \midrule
+			0   & 0   & 0     & $ x_7 $     \\
+			0   & 1   & 0     & $ x_8 $     \\
+			1   & 0   & 0     & $ x_9 $     \\
+			1   & 1   & 0     & $ x_{10} $  \\ \bottomrule
+		\end{tabular}
+	\end{subtable}
+\end{table}
+
+We are going to implement belief propagation on $ \Tcal $.
+The provided template \verb|junction_tree.py| contains the following tasks:
+
+
+\begin{itemize}
+	\item \verb|initial_clique_potentials()|: Compute  initial clique potentials $ \psi_i (\Cbs_i) $ from factors $ \phi_i  $.
+
+	\item \verb|messages()|: Compute messages $ \delta_{i \to j}  $ from initial clique potentials $ \psi_i (\Cbs_i)  $.
+
+	\item \verb|beliefs()|: Compute calibrated clique beliefs $ \beta_i(\Cbs_i) $ and sepset beliefs $ \mu_{i,j} (\Sbs_{i,j})  $, using initial clique potentials $ \psi_i (\Cbs_i) $ and messages $ \delta_{i \to j}  $.
+
+	\item Using the beliefs $ \beta_i(\Cbs_i), \mu_{i,j} (\Sbs_{i,j}) $, compute
+	      \begin{itemize}
+		      \item \verb|query1()|: $ P(B) $
+		      \item \verb|query2()|: $ P(A | C) $
+		      \item \verb|query3()|: $ P(A, B, C, D, E) $
+	      \end{itemize}
+
+\end{itemize}
+
+Please finish the unimplemented TODO blocks and submit completed \verb|junction_tree.py| to Gradescope (\verb|https://www.gradescope.com/courses/36025|).
+
+
+In the implementation, please represent factors as \verb|numpy.ndarray| and store different factors in a dictionary with its scope as the key.
+For example, as provided in the template, \verb|phi['ab']| is a factor $ \phi_{AB} $ represented as a $ 2 \times 2 $ matrix, where \verb|phi['ab'][0, 0]| $ = \phi_{AB} (A = 0, B = 0) =  P(B= 0 | A = 0)  = x_1 $.
+For messages, one can use \verb|delta['ab_cd']| to denote a message from $ AB $ to $ CD $.
+Most functions can be written in 3 lines of code.
+You may find \verb|np.einsum()| useful.
+
+\newpage
+
+\section{Parameter Learning [15 points] (Xun)}
+
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzcd}
+		Y_1 \arrow[r] \arrow[d] & Y_2 \arrow[r] \arrow[d] & \cdots \arrow[r] & Y_T \arrow[d] \\
+		X_1  &  X_2  & & X_T
+	\end{tikzcd}
+\end{figure}
+
+Consider an HMM with $ Y_t \in [M] $, $ X_t \in \mathbb{R}^{K} $ ($ M, K \in \mathbb{N} $).
+Let $ (\pi, A, \{\mu_i, \sigma_i^2\}_{i=1}^M) $ be its parameters, where $ \pi \in \mathbb{R}^{M} $ is the initial state distribution, $ A \in \mathbb{R}^{M \times M} $ is the transition matrix, $ \mu_i \in \mathbb{R}^{K} $ and $ \sigma_i^2 > 0 $ are parameters of the emission distribution, which is defined to be an isotropic Gaussian.
+In other words,
+\begin{align}
+	P(Y_1 = i)               & = \pi_{i}                          \\
+	P(Y_{t+1} = j | Y_t = i) & = A_{ij}                           \\
+	P(X_t | Y_t = i)         & = \Ncal(X_t; \mu_i, \sigma_i^2 I).
+\end{align}
+
+
+We are going to implement the Baum-Welch (EM) algorithm that estimates parameters from data $ \boldsymbol{X} \in \mathbb{R}^{N \times T \times K} $, which is a collection of $ N $ observed sequences of length $ T $.
+Note that there are different forms of forward-backward algorithms, for instance the $ (\alpha,\gamma) $-recursion, which is slightly different from the $ (\alpha,\beta)$-recursion we saw in the class.
+For the ease of grading, however, please implement the $ (\alpha,\beta) $ version, and remember to normalize the messages at each step for numerical stability.
+
+
+Please complete the unimplemented TODO blocks in the template \verb|baum_welch.py| and submit it to Gradescope (\verb|https://www.gradescope.com/courses/36025|).
+The template has its own toy problem to verify the implementation.
+The test cases are ran on other randomly generated problem instances.
+
+
+
+\newpage
+\bibliography{pgm}
+\bibliographystyle{abbrvnat}
+
+\newpage
+\appendix
+\section{题目解答中提到的自制图表}
+
+\subsection{问题1.3：贝叶斯网络的亲缘化}
+判断$A \perp E \mid C$的方法，比较方便的是改成亲缘图——当然，如果你记得住do-calculus里v-structure通路阻断的条件是“不知道顶点及其任何子节点”，是最好的。
+
+亲缘图第一步是保留命题中出现的所有节点（待判断节点、条件节点）及其父节点的子图，删去无关的其他节点。但是这里待判断的恰好是$A,E$，条件节点是$C$，也就是整张图都要保留下来。
+
+\textit{注：如果我们要判断$A \perp E \mid B$，那么$C$以及$B,C$间的连线在这一步就可以去掉了。}
+\begin{figure}[h]
+	\centering
+	\begin{tikzcd}
+		A \arrow[r] & B \arrow[r] & C \\
+		D \arrow[ur] \arrow[r] & E &
+	\end{tikzcd}
+	\caption{题目1.3-原图（也是第一步处理后的图）}
+	\label{fig:bayesnet-origin}
+\end{figure}
+
+第二步：亲缘化，对于任意节点$X_i$，如果它同时具有两个及以上的父节点（形成了以$X_i$为节点的v-structure），那么父节点间两两连接为无向边。如果两个父节点间本就以有向边连接，则提前改为无向边吧——反正下一步所有的边都要改成无向的。在图\ref{fig:bayesnet-origin}中，需要连接的就是$A$和$D$：
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzcd}
+		A \arrow[r] & B \arrow[r] & C \\
+		D\arrow[u,dash] \arrow[ur] \arrow[r] & E &
+	\end{tikzcd}
+	\caption{题目1.3-亲缘化}
+	\label{fig:bayesnet-moralized}
+\end{figure}
+
+第三步，无向化。把所有的有向边都变成无向边，这个很简单。
+
+第四步，删除条件节点及连接它们的路径，处理过程到此结束，参考下图。
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzcd}
+		A \arrow[r,dash] & B \\
+		D\arrow[u,dash] \arrow[ur, dash] \arrow[r,dash] & E &
+	\end{tikzcd}
+	\caption{题目1.3-无向化并删除条件节点}
+	\label{fig:bayesnet-deoriented_delete_given}
+\end{figure}
+
+显然，A与E之间仍然存在$A - D - E$的无向链路，因此\textbf{无从保证二者在已知$C$时的条件独立性}。但\textbf{不能绝对的说二者一定不独立}，因为仍然存在数值独立的可能性，例如，$P(A\mid B)$与$P(A)$对于$A,B$所有可能的取值均相等。
+
+但反过来说，如果两个节点在亲缘化以后没有连在一起，那两个节点一定是条件独立的。
+\end{document}
+
+
+
