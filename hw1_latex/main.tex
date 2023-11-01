@@ -270,17 +270,53 @@ We are going to see how \emph{tree-width}, a property of the graph, is related t
 	\item \textbf{[2 points]} Write down largest clique(s) for the elimination order $ E, D, H, F, B, A, G, I, C $.
 
 	      \begin{solution}
-		      The largest clique for order above is:
+		      先摆结论。消去过程中出现的最大团有三种：
+
+		      $\{A,B,F,G,H\}, \{A,B,F,G,I\}, \{A,B,C,G,I\}$
+		      \begin{itemize}
+			      \item 消去E：BDFH
+			      \item 消去D：ABFGH
+			      \item 消去H：ABFGI
+			      \item 消去F：ABCGI
+			      \item 消去B：ACGI
+			      \item 消去A: CGI
+			      \item 消去G：CI
+			      \item 消去I：C
+			      \item 消去C：空集
+		      \end{itemize}
 	      \end{solution}
 
 
 	\item \textbf{[2 points]} Write down largest clique(s) for the elimination order $ A, G, I, C, D, H, F, B, E $.
 
+	      \begin{solution}
 
+		      The maximal clique during this elimination order is: BEFH
+
+		      \begin{itemize}
+			      \item After A: BDE
+			      \item After G: BDE, DEH
+			      \item After I: BDE, DEH, EFH
+			      \item After C: BDE, DEH, EFH, BEF
+			      \item After D: BEFH (maximal clique is the MRF now)
+			      \item After H: BEF
+			      \item After F: BE
+			      \item After B: E
+			      \item After E: (empty set)
+		      \end{itemize}
+
+	      \end{solution}
 
 	\item \textbf{[2 points]} Which of the above ordering is preferable? Explain briefly.
 
+	      \begin{solution}
+		      \textbf{The second one,} which makes the largest clique scope of reconstituted graphs
+		      during the elimination smaller, decreasing the maximum scope size $N_{max}$
+		      VE algorithm should deal with in each step.
 
+		      \textbf{第二个。}这种顺序使得处理过程中的最大团规模更小，从而使每一步中VE算法需要
+		      处理的最大潜在取值规模$N_{max}$更小，从而压缩了运算的复杂度。
+	      \end{solution}
 
 	\item \textbf{[4 points]} Using this intuition, give a reasonable $ (\ll n^2) $ upper bound on the tree-width of the $ n \times n $ grid.
 
@@ -498,6 +534,11 @@ The test cases are ran on other randomly generated problem instances.
 
 但反过来说，如果两个节点在亲缘化以后没有连在一起，那两个节点一定是条件独立的。
 \end{document}
+
+
+
+
+
 
 
 
