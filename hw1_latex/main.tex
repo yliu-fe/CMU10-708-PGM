@@ -342,24 +342,64 @@ Please sketch the generated objects in each step.
 
 \begin{enumerate}
 	\item \textbf{[1 pts]} Moralize $ \Gcal $ to construct an undirected graph $ \Hcal $.
+	      \begin{solution}
+		      Undirected graph is shown below. Nodes C and E is connected because they are both
+		      parent nodes of node D in a v-structure.
 
+		      亲缘化的结果如下。由于$C \rightarrow D \leftarrow E$是一个v型结构，C和E需要无向边连接。
+	      \end{solution}
 
+	      \begin{figure}[h]
+		      \centering
+		      \begin{tikzcd}
+			      A \arrow[r,dash] \arrow[rd,dash] & B \arrow[r,dash] & C \arrow[d,dash] \\
+			      & E\arrow[ur,dash] \arrow[r,dash] &  D
+		      \end{tikzcd}
+	      \end{figure}
 
 	\item \textbf{[3 pts]} Triangulate $ \Hcal $ to construct a chordal graph $ \Hcal^* $.
 
 	      (Although there are many ways to triangulate a graph, for the ease of grading, please use the triangulation that corresponds to the elimination order $ A, B, C, D, E $.)
 
+	      \begin{solution}
+		      三角化的结果如下，参照题目要求，按照消除顺序$A,B,C,D,E$组织。
+
+		      Chordal graph is shown below, w.r.t. the order of A-B-C-D-E.
+	      \end{solution}
+
+	      \begin{figure}[h]
+		      \centering
+		      \begin{tikzcd}
+			      A \arrow[r,dash] \arrow[rd,dash] & B\arrow[d,dash] \arrow[r,dash] & C \arrow[d,dash] \\
+			      & E\arrow[ur,dash] \arrow[r,dash] &  D
+		      \end{tikzcd}
+	      \end{figure}
+
+
 
 	\item \textbf{[3 pts]} Construct a cluster graph $ \Ucal $ where each node is a maximal clique $ \Cbs_i $ from $ \Hcal^* $ and each edge is the sepset $ \Sbs_{i,j} = \Cbs_i \cap \Cbs_j $ between adjacent cliques $ \Cbs_i $ and $ \Cbs_j $.
 
-
+	      \begin{solution}
+		      不太会用Tikz，简单意会一下吧。Cluster Graph的形式是三个节点组成的三角图。
+		      三个节点分别是$A,B,E$，$B,C,E$和$C,D,E$。其中：
+		      \begin{itemize}
+			      \item $A,B,E$与$B,C,E$之间的边是节点集$B,E$；
+			      \item $A,B,E$和$C,D,E$之间的边是节点$E$；
+			      \item $B,C,E$和$C,D,E$之间的边是节点集$C,E$。
+		      \end{itemize}
+	      \end{solution}
 
 
 	\item \textbf{[3 pts]} Run maximum spanning tree algorithm on $ \Ucal $ to construct a junction tree $ \Tcal $.
 
 	      (The cluster graph is small enough to calculate maximum spanning tree in one's head.)
 
-
+	      \begin{solution}
+		      Eliminate the edge between $ABE$ and $CDE$(with weight 1), the junction tree is:
+		      \begin{equation}
+			      ABE \overset{BE}{---} BCE \overset{CE}{---} CDE \nonumber
+		      \end{equation}
+	      \end{solution}
 \end{enumerate}
 
 
@@ -534,6 +574,17 @@ The test cases are ran on other randomly generated problem instances.
 
 但反过来说，如果两个节点在亲缘化以后没有连在一起，那两个节点一定是条件独立的。
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
