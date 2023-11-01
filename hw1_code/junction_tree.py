@@ -16,7 +16,14 @@ def factors(x):
 
 def initial_clique_potentials(phi):
     psi = dict()
-    # TODO ...
+    # ...
+    ab_tmp = np.einsum("a,ab->ab", phi["a"], phi["ab"])
+    psi["abe"] = np.einsum("ab,ae->abe", ab_tmp, phi["ae"])
+    bce_tmp = np.zeros(2,2,2)
+    bce_tmp[:,:,0] = phi["bc"]
+    bce_tmp[:,:,1] = phi["bc"]
+    psi["bce"] = bce_tmp
+    psi["ced"] = phi["ced"]
     return psi
 
 
